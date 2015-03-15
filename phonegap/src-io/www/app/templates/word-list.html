@@ -1,0 +1,16 @@
+<ion-view>
+    <ion-content>
+        <bw-notification></bw-notification>
+        <table role="grid">
+            <tr>
+                <th>Baby said...</th>
+                <th>On...</th>
+            </tr>
+            <tr ng-repeat="w in words track by $index" ng-click="viewWord(w)">
+                <td>{{w.word}}</td>
+                <td>{{w.when | date}}</td>
+            </tr>
+        </table>
+        <a href="#/words/new" class="button button-positive button-block">New word!</a>
+    </ion-content>
+</ion-view>

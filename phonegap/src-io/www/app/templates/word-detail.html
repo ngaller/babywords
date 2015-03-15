@@ -1,0 +1,36 @@
+<ion-view>
+    <ion-content>
+        <form name="editForm" novalidate>
+            <div class="list">
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">On...</span>
+                    <input required type="date" ng-model="selectedWord.when"/>
+                </label>
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">Baby said...</span>
+                    <input required type="text" placeholder="Ga?" ng-model="selectedWord.word"/>
+                </label>
+                <label class="item item-select item-stacked-label">
+                    <div class="input-label">It sounded...</div>
+                    <select ng-model="selectedWord.soundedLike">
+                        <option value="1">Kinda like it</option>
+                        <option value="2">With a lot of imagination</option>
+                        <option value="3">Pretty close!</option>
+                        <option value="4">Perfect!!!</option>
+                    </select>
+                </label>
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">It happened...</span>
+                <textarea placeholder="Explain what baby was doing at the time"
+                          ng-model="selectedWord.context"></textarea>
+                </label>
+            </div>
+
+            <!-- TODO: show recordings, if there is only 1 we show that, otherwise we show a list -->
+            <!-- TODO: capture location where it happened -->
+
+
+            <button class="button button-positive button-block" ng-click="save()">Save</button>
+        </form>
+    </ion-content>
+</ion-view>
