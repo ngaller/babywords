@@ -18,6 +18,8 @@ $dark:                            #444 !default;
 // The path for our ionicons font files, relative to the built CSS in www/css
 $ionicons-font-path: "../lib/ionic/fonts" !default;
 
+$font-size-base: 18px;
+
 // Include all of Ionic
 @import "www/lib/ionic/scss/ionic";
 
@@ -26,19 +28,28 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
   border-bottom: 5px solid #800000;
 }
 
+// alert is used for unobtrusive popups
 .alert {
-  margin: 5px;
-  padding: 5px 15px 5px 5px;
-  background-color: $stable;
-  border: 1px solid $button-stable-border;
-
+  @extend .card;
   .btn-close {
     float: right;
   }
-  &.alert-error {
+  &.alert-error .item {
     background-color: $energized;
   }
-  &.alert-info {
+  &.alert-info .item {
     background-color: $calm;
   }
+}
+
+table.word-list {
+  width: 100%;
+
+  th {
+    font-weight: bold;
+  }
+}
+
+body {
+  text-transform: uppercase;
 }

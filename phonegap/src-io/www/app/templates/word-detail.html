@@ -1,5 +1,6 @@
-<ion-view>
+<ion-view title="Baby Said...">
     <ion-content>
+        <bw-notification></bw-notification>
         <form name="editForm" novalidate>
             <div class="list">
                 <label class="item item-input item-stacked-label">
@@ -11,7 +12,7 @@
                     <input required type="text" placeholder="Ga?" ng-model="selectedWord.word"/>
                 </label>
                 <label class="item item-select item-stacked-label">
-                    <div class="input-label">It sounded...</div>
+                    <span class="input-label">It sounded...</span>
                     <select ng-model="selectedWord.soundedLike">
                         <option value="1">Kinda like it</option>
                         <option value="2">With a lot of imagination</option>
@@ -27,6 +28,7 @@
             </div>
 
             <!-- TODO: show recordings, if there is only 1 we show that, otherwise we show a list -->
+
             <!-- TODO: capture location where it happened -->
 
 

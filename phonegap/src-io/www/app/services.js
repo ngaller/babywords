@@ -40,7 +40,7 @@ angular.module('babywords.services', [])
             //}
         }
     })
-    .factory("MediaService", function($q) {
+    .factory("MediaService", function($q, FileManager) {
         function isTempRecording(src) {
             return /^temp/.test(src);
         }
@@ -54,23 +54,11 @@ angular.module('babywords.services', [])
                     (cordova.file.externalDataDirectory || cordova.file.dataDirectory)) + (directoryOnly ? "" : src);
         }
 
-        function moveFile(sourceFile, destDirectory, destFileName) {
-            return new $q(function(resolve, reject) {
-                window.resolveLocalFileSystemURL(sourceFile, function(fileEntry) {
-                    window.resolveLocalFileSystemURL(destDirectory, function(destDirectoryEntry) {
-                        fileEntry.moveTo(destDirectoryEntry, destFileName, function() {
-                            resolve(destFileName);
-                        }, reject);
-                    }, reject);
-                }, reject);
-            });
-        }
-
         function moveToTempFile(sourceFile) {
             var ext = /\.[^.]*$/.exec(sourceFile)[0];
             var tempFile = "temprecording" + ext;
             var destDirectory = dataPath(tempFile, true);
-            return moveFile(sourceFile, destDirectory, tempFile);
+            return FileManager.moveFile(sourceFile, destDirectory, tempFile);
         }
 
         return {
@@ -96,6 +84,7 @@ angular.module('babywords.services', [])
             },
 
             // used to save the recording from a temp file to the application data directory.
+            // resolve to path of the saved file
             saveRecording: function (src) {
                 return $q(function (resolve, reject) {
                     if (!isTempRecording(src)) {
@@ -107,7 +96,7 @@ angular.module('babywords.services', [])
                         throw new Error("Unable to get file type " + src);
                     var dest = (new Date()).toISOString().replace(/[^0-9]/g, "") + m[0];
                     var destDirectory = dataPath("destFileName", true);
-                    moveFile(dataPath(src), destDirectory, dest).then(function () {
+                    FileManager.moveFile(dataPath(src), destDirectory, dest).then(function () {
                         resolve(dest);
                     }, reject);
                 });
@@ -150,51 +139,46 @@ angular.module('babywords.services', [])
             $log.error(s);
         }
     })
-    .factory('Chats', function () {
-        // Might use a resource here that returns a JSON array
-
-        // Some fake testing data
-        var chats = [{
-            id: 0,
-            name: 'Ben Sparrow',
-            lastText: 'You on your way?',
-            face: 'https://pbs.twimg.com/profile_images/514549811765211136/9SgAuHeY.png'
-        }, {
-            id: 1,
-            name: 'Max Lynx',
-            lastText: 'Hey, it\'s me',
-            face: 'https://avatars3.githubusercontent.com/u/11214?v=3&s=460'
-        }, {
-            id: 2,
-            name: 'Andrew Jostlin',
-            lastText: 'Did you get the ice cream?',
-            face: 'https://pbs.twimg.com/profile_images/491274378181488640/Tti0fFVJ.jpeg'
-        }, {
-            id: 3,
-            name: 'Adam Bradleyson',
-            lastText: 'I should buy a boat',
-            face: 'https://pbs.twimg.com/profile_images/479090794058379264/84TKj_qa.jpeg'
-        }, {
-            id: 4,
-            name: 'Perry Governor',
-            lastText: 'Look at my mukluks!',
-            face: 'https://pbs.twimg.com/profile_images/491995398135767040/ie2Z_V6e.jpeg'
-        }];
-
-        return {
-            all: function () {
-                return chats;
-            },
-            remove: function (chat) {
-                chats.splice(chats.indexOf(chat), 1);
-            },
-            get: function (chatId) {
-                for (var i = 0; i < chats.length; i++) {
-                    if (chats[i].id === parseInt(chatId)) {
-                        return chats[i];
-                    }
+    // convenience wrapper for File Manager API
+    .factory("FileManager", function($q) {
+        // custom FileEntry object
+        function FileEntry(fileEntry) {
+            this.entry = fileEntry;
+        }
+        angular.extend(FileEntry.prototype, {
+            // Move file in specified directory / filename
+            moveTo: function(destDirectory, destFileName) {
+                if(typeof destDirectory == "string"){
+                    return FileManager.resolveLocalFileSystemURL(destDirectory).then(function(dirEntry) {
+                        return this.moveTo(dirEntry, destFileName);
+                    }.bind(this));
+                } else {
+                    return $q(function(resolve, reject) {
+                        this.entry.moveTo(destDirectory, destFileName, function() {
+                            resolve();
+                        }, reject);
+                    }.bind(this));
                 }
-                return null;
+            }
+        });
+        var FileManager = {
+            // return a file entry object for the specified file system URL
+            resolveLocalFileSystemURL: function (sourceFile) {
+                return $q(function (resolve, reject) {
+                    window.resolveLocalFileSystemURL(sourceFile, function(fileEntry) {
+                        resolve(new FileEntry(fileEntry));
+                    }, function(error) {
+                        reject(error);
+                    });
+                });
+            },
+
+            moveFile: function(sourceFile, destDirectory, destFileName) {
+                return FileManager.resolveLocalFileSystemURL(sourceFile)
+                    .then(function(fileEntry) {
+                        return fileEntry.moveTo(destDirectory, destFileName);
+                    });
             }
         };
+        return FileManager;
     });

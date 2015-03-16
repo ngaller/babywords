@@ -18,8 +18,8 @@ angular.module('babywords.controllers', ["babywords.models", "babywords.services
         $scope.save = function () {
             alert("SAVE");
             WordsModel.saveSelectedWord().then(function () {
-                $location.back()
-            });
+                $location.back();
+            })
         }
         $scope.remove = function () {
             WordsModel.deleteSelectedWord();
@@ -34,29 +34,10 @@ angular.module('babywords.controllers', ["babywords.models", "babywords.services
 
         $scope.save = function () {
             WordsModel.saveSelectedWord().then(function () {
-                $location.back()
-            });
+                $location.back();
+            })
         }
         $scope.cancel = function () {
             $location.back();
         }
     });
-
-//.controller('DashCtrl', function($scope) {})
-//
-//.controller('ChatsCtrl', function($scope, Chats) {
-//  $scope.chats = Chats.all();
-//  $scope.remove = function(chat) {
-//    Chats.remove(chat);
-//  }
-//})
-//
-//.controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
-//  $scope.chat = Chats.get($stateParams.chatId);
-//})
-//
-//.controller('AccountCtrl', function($scope) {
-//  $scope.settings = {
-//    enableFriends: true
-//  };
-//});
